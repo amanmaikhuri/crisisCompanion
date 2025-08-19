@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { doSignInWithGoogle } from "../firebase/auth"; // Ensure this function is defined in your firebase setup
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const SignIn = () => {
   const {
@@ -30,6 +30,13 @@ const SignIn = () => {
       setAuthError(error.message);
     }
   };
+
+ const doSignInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    //rersult.user
+    return result;
+};
 
    // Handle login using Google
 const handleGoogleSignIn = async () => {
