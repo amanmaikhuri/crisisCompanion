@@ -4,10 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import { auth } from '../firebase/firebase'
+import { useNavigate } from "react-router-dom";
 
 const CompanionAI = () => {
+  const user = auth.currentUser;
+  const navigate = useNavigate();
+
+  if(!user){
+    navigate("/sign-in");
+  }
+
   const [messages, setMessages] = useState([
-    { role: "ai", text: "Hello Aman! I am your AI Companion. How can I help you?" },
+    { role: "ai", text: `Hello ${user ? user.displayName: "Guest"}! I am your AI Companion. How can I help you?` },
   ]);
   const [userMsg, setUserMsg] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -16,14 +25,16 @@ const CompanionAI = () => {
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
+  
+
   // ------------------------------
   // Fetch Gemini response with length control
   // ------------------------------
   async function sendAiQuery(
     prompt,
-    role = "You are a concise, empathetic mental health assistant and virtual psychiatrist. Keep responses short (max 500 ) and to the point, while still caring."
+    role = "You are a concise, empathetic mental health assistant and virtual psychiatrist. Keep responses short (max 500 ) and to the point, while still caring. first understand the tone , mental state of the user using the message typed and then response empathatically."
   ) {
-    if (!apiKey) return "API key missing. Please set VITE_GEMINI_API_KEY.";
+    if (!apiKey) return "Internal Server Error!";
 
     try {
       const response = await fetch(
